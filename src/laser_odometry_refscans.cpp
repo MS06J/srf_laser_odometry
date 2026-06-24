@@ -152,6 +152,9 @@ void SRF_RefS::initialize(unsigned int size, float FOV_rad, unsigned int odo_met
   kai_abs.setConstant(0.f);
   kai_loc_old.setConstant(0.f);
   overall_trans_prev.setIdentity();
+  laser_pose = Pose2d::Identity();
+  laser_oldpose = Pose2d::Identity();
+  last_increment = Pose2d::Identity();
 }
 
 void SRF_RefS::createScanPyramid() {
@@ -926,8 +929,8 @@ void SRF_RefS::performWarping() {
 
         // Very close pixel
         if (std::abs(std::round(uwarp) - uwarp) < 0.05f) {
-          range_warped[image_level](std::round(uwarp)) += range_w;
-          wacu(std::round(uwarp)) += 1.f;
+          range_warped[image_level](static_cast<int>(std::round(uwarp))) += range_w;
+          wacu(static_cast<int>(std::round(uwarp))) += 1.f;
         } else {
           const float w_r = square(delta_l);
           range_warped[image_level](uwarp_r) += w_r * range_w;
